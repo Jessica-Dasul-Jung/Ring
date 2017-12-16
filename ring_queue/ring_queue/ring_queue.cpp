@@ -1,22 +1,10 @@
 
 
-// Description: An incomplete implementation of iterators for a
-//              RingQueue class.
-//
-// Notes: The project DOES compile but there is no meaningful 
-//              output
-//
-// Your job: To complete this set of classes so that the output
-//              produced by 'main' (below), matches the sample
-//              file provided at the end of this file.
-
 #include <iostream>
 
 // Forward declaration
 template <typename ItemType, int MAX_SIZE>
 class RingQueue;
-
-
 
 template <typename ItemType, int MAX_SIZE>
 class RingQueue {
@@ -62,17 +50,22 @@ public:
 
 		iterator& operator++() {
 			int temp = offset + 1;
-			if (temp >= MAX_SIZE) //exceeds size
+			if (temp == MAX_SIZE){
 				offset = 0;
-			else offset++;
+			}
+			else{
+				offset++;
+			}
 			return *this;
 		}
 
 		iterator operator++(int unused) {
 			int temp = offset + 1;
-			if (temp >= MAX_SIZE) //exceeds size
+			if (temp == MAX_SIZE) //exceeds size
+			{
 				offset = 0;
-			else offset++;			
+			}
+			else { offset++; }
 			return *this;
 		}
 
@@ -140,7 +133,8 @@ public:
 	ItemType front() const {
 		if (ring_size == 0)
 		{
-			throw std::cerr << "Warning: Empty ring!\n";
+			std::cerr << "Warning: Empty ring!\n";
+			throw;
 		}
 		else return buffer[begin_index];
 	}
@@ -148,7 +142,8 @@ public:
 	ItemType back() const {
 		if (ring_size == 0)
 		{
-			throw std::cerr << "Warning: Empty ring!\n";
+			std::cerr << "Warning: Empty ring!\n";
+			throw;
 		}
 		else return buffer[end_index()];
 	}
@@ -160,8 +155,13 @@ public:
 		if (ring_size == MAX_SIZE)
 		{
 			if (begin_index + 1 == MAX_SIZE)
+			{
 				begin_index = 0;
-			else begin_index++;
+			}
+			else
+			{
+				begin_index++;
+			}
 		}
 		else ring_size++;
 
@@ -170,17 +170,24 @@ public:
 
 	void pop_front() {
 		if (begin_index + 1 == MAX_SIZE)
+		{
 			begin_index = 0;
-		else begin_index++;
+		}
+		else
+		{
+			begin_index++;
+		}
 
 		if (ring_size != 0)
+		{
 			ring_size--;
+		}
 		return;
 	}
 
 	// Functions that return iterators
 	iterator begin() {
-		return iterator(this, begin_index);
+		return iterator(this, 0);
 	}
 	iterator end() {
 		return iterator(this, ring_size); 
@@ -235,13 +242,13 @@ int main() {
 	// implementation of RingQueue<ItemType,int>::end(). 
 	// If the implementation is not correct, it might result in 
 	// an infinite loop.
-	/**
+
 	std::cout << "Queue via iterators: \n";
 	for ( auto it = rq.begin() ; it != rq.end() ; ++it ) {
 	std::cout << "Value: " << *it << ", address: " << &(*it) << '\n';
 	}
 	std::cout << '\n';
-	*/
+
 
 
 
@@ -310,3 +317,5 @@ Val: 5, at: 0x7ffcdeeaab50
 Val: 6, at: 0x7ffcdeeaab54
 Val: 7, at: 0x7ffcdeeaab58
 */
+
+
