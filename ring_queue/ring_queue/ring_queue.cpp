@@ -10,7 +10,6 @@
 //              produced by 'main' (below), matches the sample
 //              file provided at the end of this file.
 
-//dfdf
 #include <iostream>
 
 // Forward declaration
@@ -28,13 +27,9 @@ class RingQueue {
 	// forward, etc.).
 public:
 	class iterator;
-
-
-
 	// Aliases. 
 	typedef ItemType* pointer;
 	typedef ItemType& reference;
-
 
 
 	// Definition of RingQueue<ItemType,MAX_SIZE>::iterator
@@ -60,34 +55,36 @@ public:
 
 
 	public:
-		reference operator*() {
-			// Replace the line(s) below with your code.
-			return parent->buffer[0];
+		reference operator*() { //check
+			int curidx = ((parent->begin_index + offset) % MAX_SIZE);
+			return parent->buffer[curidx];
 		}
 
 		iterator& operator++() {
-			// Replace the line(s) below with your code.
+			int temp = offset + 1;
+			if (temp >= MAX_SIZE) //exceeds size
+				offset = 0;
+			else offset++;
 			return *this;
 		}
 
 		iterator operator++(int unused) {
-			// Replace the line(s) below with your code.
+			int temp = offset + 1;
+			if (temp >= MAX_SIZE) //exceeds size
+				offset = 0;
+			else offset++;			
 			return *this;
 		}
 
 		bool operator==(const iterator& rhs) const {
-			// Replace the line(s) below with your code.
-			return true;
+			return (parent == rhs.parent && offset == rhs.offset);
 		}
 
 		bool operator!=(const iterator& rhs) const {
-			// Replace the line(s) below with your code.
-			return true;
+			return (parent != rhs.parent || offset != rhs.offset);
 		}
 
 	};
-
-
 
 	/**
 	class const_iterator{
@@ -107,13 +104,9 @@ public:
 	};
 	*/
 
-
-
 	// Friendship goes both ways here.
 	friend class iterator;
 	// friend class const_iterator;  // not implemented... yet.
-
-
 
 private:
 	// A fixed-size static array with constant capacity that represents 
@@ -133,8 +126,8 @@ private:
 	// A helper function that computes the index of 'the end'
 	// of the RingQueue
 	int end_index() const {
-		// Replace the line(s) below with your code.
-		return begin_index;
+		int index = (begin_index + ring_size) % MAX_SIZE; //check
+		return index; //check
 	}
 
 
@@ -145,48 +138,57 @@ public:
 
 	// Accessors. Note: 'back()' is not considered part of the array.
 	ItemType front() const {
-		if (ring_size == 0) std::cerr << "Warning: Empty ring!\n";
-		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-		// Feel free to throw instead...
-
-
-		// Replace the line(s) below with your code.
-		return buffer[0];
+		if (ring_size == 0)
+		{
+			throw std::cerr << "Warning: Empty ring!\n";
+		}
+		else return buffer[begin_index];
 	}
+
 	ItemType back() const {
-		if (ring_size == 0) std::cerr << "Warning: Empty ring!\n";
-		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-		// Feel free to throw instead...
-
-
-		// Replace the line(s) below with your code.
-		return buffer[0];
+		if (ring_size == 0)
+		{
+			throw std::cerr << "Warning: Empty ring!\n";
+		}
+		else return buffer[end_index()];
 	}
-
-
 
 	// Mutators
 	void push_back(const ItemType& value) {
+		buffer[end_index()] = value;
+
+		if (ring_size == MAX_SIZE)
+		{
+			if (begin_index + 1 == MAX_SIZE)
+				begin_index = 0;
+			else begin_index++;
+		}
+		else ring_size++;
+
 		return;
 	}
+
 	void pop_front() {
+		if (begin_index + 1 == MAX_SIZE)
+			begin_index = 0;
+		else begin_index++;
+
+		if (ring_size != 0)
+			ring_size--;
 		return;
 	}
 
 	// Functions that return iterators
 	iterator begin() {
-		// Replace the line(s) below with your code.
-		return iterator(this, 0);
+		return iterator(this, begin_index);
 	}
 	iterator end() {
-		// Replace the line(s) below with your code.
-		return iterator(this, 0);
+		return iterator(this, ring_size); 
 	}
 
 	// Miscellaneous functions
 	size_t size() const {
-		// Replace the line(s) below with your code.
-		return 0;
+		return ring_size;
 	}
 
 	// Debugging functions
@@ -202,15 +204,22 @@ public:
 
 int main() {
 	RingQueue<int, 7> rq;
+	std::cout << "Begin " << &(*rq.begin()) << std::endl;
+
 	rq.dump_queue();
 
 	for (int i = 0; i < 8; ++i)
 		rq.push_back(i + 1);
+	std::cout << "Begin " << &(*rq.begin()) << std::endl;
+
 
 	rq.dump_queue();
+	std::cout << "Begin " << &(*rq.begin()) << std::endl;
+
 	rq.pop_front();
 
 	std::cout << "Queue via size: \n";
+	std::cout <<"Begin " << &(*rq.begin()) << std::endl;
 
 	// RingQueue<int,7>::iterator it = rq.begin() ; 
 	auto it = rq.begin();
